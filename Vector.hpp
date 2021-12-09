@@ -56,6 +56,13 @@ namespace ft {
     template<class T, class Allocator = std::allocator<T> >
     class vector {
 
+    private:
+
+        T*              _arr;
+        size_t          _sz;
+        size_t          _cap;
+        allocator_type  _alloc;
+
     public:
 
         // types
@@ -74,12 +81,22 @@ namespace ft {
 
         //construct
 
-        explicit                vector (const allocator_type& alloc = allocator_type());
+        explicit                vector (const allocator_type& alloc =
+                allocator_type()) : _arr ( nullptr ), _sz( 0 ), _cap( 0 ),
+                                    _alloc( alloc ) {}
+
         explicit                vector (size_type n, const value_type& val = value_type(),
-                                        const allocator_type& alloc = allocator_type());
+                                        const allocator_type& alloc =
+                                                allocator_type()) : _sz( n ),
+                                                _cap( n ), _alloc( alloc ) {
+            _arr = new value_type[n]();
+            for (size_t i = 0; i < _sz; ++i) {
+                _arr[i] = val;
+            }
+        }
         template <class InputIterator>
-                                vector (InputIterator first, InputIterator last,
-                                        const allocator_type& alloc = allocator_type());
+        vector (InputIterator first, InputIterator last,
+                const allocator_type& alloc = allocator_type());
 
         //copy
         constexpr               vector(const vector& x);
@@ -153,9 +170,6 @@ namespace ft {
                 bool            operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
         template <class T, class Alloc>
                 void            swap (vector<T,Alloc>& x, vector<T,Alloc>& y);
-
-
-    private:
 
     };
 
