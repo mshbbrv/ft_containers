@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Node.hpp"
 //#include "Utility.hpp"
 //#include "Iterator.hpp"
 //#include "Node.hpp"
@@ -23,15 +24,22 @@ namespace ft {
         typedef const value_type*                   		const_pointer;
 
         //итераторы ?
-        typedef ft::node_iterator<Node_<value_type>*, value_type>					iterator;
+        /*typedef ft::node_iterator<Node_<value_type>*, value_type>
+                iterator;
         typedef ft::node_iterator<const Node_<value_type>*, value_type>					const_iterator;
         typedef ft::reverse_iterator<iterator>								reverse_iterator;
         typedef ft::reverse_iterator<const_iterator>							const_reverse_iterator;
         typedef typename allocator_type::template rebind<Node_<value_type> >::other			allocator_rebind_node;
-        typedef typename allocator_type::template rebind<Tree<value_type> >::other			allocator_rebind_tree;
+        typedef typename allocator_type::template rebind<Tree<value_type>
+         >::other			allocator_rebind_tree;*/
 
         typedef std::size_t								size_type;
         typedef std::ptrdiff_t                          difference_type;
+
+        typedef Node<value_type> node;
+        typedef Node<value_type> *node_pointer;
+        typedef Node<value_type> &node_reference;
+        typedef typename allocator_type::template rebind<node>::other node_allocator;
 
         class value_compare : public std::binary_function<value_type, value_type, bool> {
         protected:
@@ -45,11 +53,45 @@ namespace ft {
 
     private:
         // ??
+        node_allocator          _node_alloc;
         allocator_type 			_allocator;
-        allocator_rebind_tree   _allocator_rebind_tree;
-        allocator_rebind_node	_allocator_rebind_node;
-        Compare		 			_comp;
-        Tree<value_type >*		_tree;
+        key_compare		 		_comp;
+        size_type _size;
+
+        node_pointer _root;
+        node_pointer _end;
+        node_pointer _begin;
+
+
+        //инициализируем начало и конец
+        void initMap() {
+            _end = _node_alloc.allocate(1);
+            _end->parent = 0;
+            _end->left = 0;
+            _end->right = 0;
+            _end->data = NULL.allocate(0);
+            _end->color = _BLACK;
+            _begin = _node_alloc.allocate(1);
+            _begin->parent = 0;
+            _begin->left = 0;
+            _begin->right = 0;
+            _begin->data = _node_alloc.allocate(0);
+            _begin->color = _BLACK;
+        };
+
+        void deleteNode(node_pointer node) {
+            _allocator.destroy(node->data);
+            _allocator.deallocate(node->data, 1);
+            _allocator.deallocate(node, 1);
+            _size--;
+        };
+
+        node_pointer getMaxFromIt(node_pointer node) {
+            node_pointer tmp = node;
+            for (; tmp && tmp->right; tmp = tmp->right);
+            return tmp;
+        };
+
 
     public:
 
