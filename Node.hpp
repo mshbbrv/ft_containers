@@ -1,19 +1,5 @@
 #pragma once
-
-enum Color {
-    BLACK,
-    RED
-};
-
-template<class keyType>
-struct Node {
-
-    keyType *key;
-    Node<keyType> *parent;
-    Node<keyType> *right;
-    Node<keyType> *left;
-    Color color;
-};
+#include <string>
 
 template <class T>
 class RBTree {
@@ -39,7 +25,7 @@ public:
     void rotateLeft(Node<T> *x) {
         Node<T> *y = x->right;
 
-        x->right = y->left;
+        x->right = y->left;const_iterator
         if (y->left != &_sentinel)  y->left->parent = x;
         if (y != &_sentinel) y->parent = x->parent;
         if (x->parent) {
@@ -114,7 +100,7 @@ public:
     }
 
     void deleteFixup(Node<T> *x) {
-        while (x != root && x->color == BLACK) {
+        while (x != _root && x->color == BLACK) {
             if (x == x->parent->left) {
                 Node<T> *w = x->parent->right;
                 if (w->color == RED) {
@@ -171,7 +157,7 @@ public:
     int deleteNode(Node<T> *z) {
         Node<T> *x, *y;
 
-        if (!z || z == &_sentinel) return;
+        if (!z || z == &_sentinel) return 0;
 
         if (z->left == &_sentinel || z->right == &_sentinel) {
             y = z;
@@ -200,9 +186,9 @@ public:
 
         if (y->color == BLACK)
             deleteFixup (x);
-        sentinel.parent = getLast();
-        sentinel.begin = getBegin();
-        size--;
+        _sentinel.parent = getLast();
+        _sentinel.begin = getBegin();
+        _size--;
         delete y;
         return 1;
     }

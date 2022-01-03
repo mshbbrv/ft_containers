@@ -28,7 +28,6 @@ namespace ft {
         typedef std::random_access_iterator_tag     iterator_category;
     };
 
-
     template <class T>
     class iterator {
     private:
