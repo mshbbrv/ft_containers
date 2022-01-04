@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <stdexcept>
+#include "Node.hpp"
 
 namespace ft {
 
@@ -144,6 +145,133 @@ namespace ft {
 
         reference operator[](const unsigned int index) {
             return *_ptr[index]; }
+    };
+
+    template<class T>
+    class map_iterator
+            : public std::iterator<std::bidirectional_iterator_tag, T> {
+
+    public:
+
+        explicit map_iterator(Node<T>* ptr = NULL) : _it( ptr ) {};
+        ~map_iterator() {};
+        map_iterator(const map_iterator &it) {
+            if (this == &it)
+                return;
+            *this = it;
+        }
+        map_iterator &operator=(const map_iterator &it) {
+            _it = it._it;
+            return *this;
+        }
+        map_iterator operator++() {
+            _getNext();
+            return *this;
+        }
+        map_iterator operator++(int) {
+            map_iterator tmp(*this);
+            operator++();
+            return tmp;
+        }
+        map_iterator operator--() {
+            _getPrev();
+            return *this;
+        }
+        map_iterator operator--(int) {
+            map_iterator tmp(*this);
+            operator--();
+            return tmp;
+        }
+        bool operator==(const map_iterator &it) const { return _it == it._it; }
+        bool operator!=(const map_iterator &it) const { return _it != it._it; }
+        T &operator*() const { return *(_it->data); }
+        T *operator->() const { return _it->data; }
+        Node<T>* getNode() { return _it; }
+
+    private:
+
+        Node<T>* _it;
+        void _getNext() {
+            if (_it->right)
+                for (_it = _it->right; _it->left; _it = _it->left);
+            else {
+                for (; _it->parent && _it->parent->right == _it; _it = _it->parent);
+                _it = _it->parent;
+            }
+        }
+        void _getPrev() {
+            if (_it->left)
+                for (_it = _it->left; _it->right; _it = _it->right);
+            else {
+                for (; _it->parent && _it->parent->left == _it; _it =_it->parent);
+                _it = _it->parent;
+            }
+        }
+    };
+
+    template<class T>
+    class map_reverse_iterator:
+            public std::iterator<std::bidirectional_iterator_tag, T> {
+
+    public:
+
+        explicit map_reverse_iterator(Node<T>* ptr = NULL) : _it(ptr) {}
+        virtual ~map_reverse_iterator() {}
+        map_reverse_iterator(const map_reverse_iterator &it) {
+            if (this == &it)
+                return;
+            *this = it;
+        }
+        map_reverse_iterator &operator=(const map_reverse_iterator &it) {
+            _it = it._it;
+            return *this;
+        }
+        map_reverse_iterator operator++() {
+            _getPrev();
+            return *this;
+        }
+        map_reverse_iterator operator++(int) {
+            map_reverse_iterator tmp(*this);
+            operator++();
+            return tmp;
+        }
+        map_reverse_iterator operator--() {
+            _getNext();
+            return *this;
+        }
+        map_reverse_iterator operator--(int) {
+            map_reverse_iterator tmp(*this);
+            operator--();
+            return tmp;
+        }
+        bool operator==(const map_reverse_iterator &it) const
+        { return _it == it._it; }
+        bool operator!=(const map_reverse_iterator &it) const
+        { return _it != it._it; }
+        T &operator*() const { return *(_it->data); }
+        T *operator->() const { return _it->data; }
+        Node<T>* getNode() { return _it; }
+
+    private:
+        Node<T>* _it;
+        void _getNext() {
+            if (_it->right)
+                for (_it = _it->right; _it->left; _it = _it->left);
+            else {
+                for (; _it->parent && _it->parent->right == _it;
+                    _it = _it->parent);
+                _it = _it->parent;
+            }
+        }
+        void _getPrev() {
+            if (_it->left)
+                for (_it = _it->left; _it->right; _it = _it->right);
+            else {
+                for (; _it->parent && _it->parent->left == _it;
+                    _it = _it->parent);
+                _it = _it->parent;
+            }
+        }
     };
 
     template<bool Cond, class T = void> struct enable_if {};
