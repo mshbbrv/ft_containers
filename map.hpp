@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Iterator.hpp"
+#include "iterator.hpp"
 
 namespace ft {
 
@@ -21,7 +21,7 @@ namespace ft {
         typedef const value_type &const_reference;
         typedef size_t size_type;
         typedef map_iterator<value_type> iterator;
-        typedef map_iterator<const value_type> const_iterator;
+        typedef const_map_iterator<value_type> const_iterator;
         typedef map_reverse_iterator<value_type> reverse_iterator;
         typedef map_reverse_iterator<const value_type> const_reverse_iterator;
 
@@ -360,11 +360,12 @@ namespace ft {
             insert(first, last);
         };
         //copy
-        map(const map &x) : _root(nullptr), _size(0) {
+        map(const map &x) : _alloc_value(x._alloc_value), _comp(x._comp),
+        _root(NULL), _size(x._size) {
             if (this == &x)
                 return;
             *this = x;
-        };
+        }
 
         //destroy
         virtual ~map() {
@@ -377,41 +378,40 @@ namespace ft {
             _alloc_node.destroy(_begin);
             _alloc_node.deallocate(_begin, 1);
             _alloc_node.deallocate(_end, 1);
-        };
+        }
 
         //operator=
         map &operator=(const map &x) {
             clear();
-            _alloc_value = x._alloc_value;
-            _comp = x._comp;
             insert(x.begin(), x.end());
-        };
+            return *this;
+        }
 
         // iterators
         iterator begin() {
             if (!_size)
                 return iterator(_end);
             return iterator(_begin->parent);
-        };
+        }
         const_iterator begin() const {
             if (!_size)
                 return const_iterator(_end);
             return const_iterator(_begin->parent);
-        };
+        }
 
-        iterator end() { return iterator(_end); };
-        const_iterator end() const { return const_iterator(_end); };
+        iterator end() { return iterator(_end); }
+        const_iterator end() const { return const_iterator(_end); }
 
         reverse_iterator rbegin() {
             if (!_size)
                 return reverse_iterator(_begin);
             return reverse_iterator(_end->parent);
-        };
+        }
         const_reverse_iterator rbegin() const {
             if (!_size)
                 return const_reverse_iterator(_begin);
             return const_reverse_iterator(_end->parent);
-        };
+        }
 
         reverse_iterator rend() { return reverse_iterator(_begin); };
         const_reverse_iterator rend() const { return const_reverse_iterator(_begin); };
@@ -423,23 +423,21 @@ namespace ft {
 
         // element access
         mapped_type &operator[](const key_type &key) {
-            return insert(value_type(key, mapped_type())).first->second;
-        };
+            return insert(ft::make_pair(key, mapped_type())).first->second;
+        }
 
         // modifiers
-
-        
 
         ft::pair<iterator, bool> insert(const value_type &val) {
             iterator found = find(val.first);
             if (found != end()) {
-                return ft::pair<iterator, bool>(found, false);
+                return ft::make_pair<iterator, bool>(found, false);
             }
             _unlink();
             _standartBstInsertion(val);
             _relinkTreeEnd();
             found = find(val.first);
-            return ft::pair<iterator, bool>(found, true);
+            return ft::make_pair<iterator, bool>(found, true);
         }
 
         iterator insert(iterator position, const value_type &val) {
@@ -553,10 +551,10 @@ namespace ft {
         }
 
         ft::pair<const_iterator, const_iterator> equal_range (const key_type& k) const {
-            return ft::pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
+            return ft::make_pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
         }
         ft::pair<iterator, iterator> equal_range (const key_type& k) {
-            return ft::pair<iterator, iterator>(lower_bound(k), upper_bound(k));
+            return ft::make_pair<iterator, iterator>(lower_bound(k), upper_bound(k));
         }
 
         // allocator

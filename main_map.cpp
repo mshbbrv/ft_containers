@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Map.hpp"
+#include "map.hpp"
 
 int main() {
 
