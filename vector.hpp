@@ -20,10 +20,20 @@ namespace ft {
         typedef std::ptrdiff_t                          difference_type;
 
         //iterator
-        typedef ft::iterator<T*> 						iterator;
-        typedef ft::iterator<const T*>				    const_iterator;
-        typedef ft::reverse_iterator<iterator> 			reverse_iterator;
-        typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+        typedef ft::iterator<value_type> 						iterator;
+        typedef ft::iterator<const value_type>				    const_iterator;
+        typedef ft::reverse_iterator<value_type> 			reverse_iterator;
+        typedef ft::reverse_iterator<value_type>	const_reverse_iterator;
+
+    private:
+
+        T*              _arr;
+        size_t          _sz;
+        size_t          _cap;
+        allocator_type  _alloc;
+
+    public:
+
         //construct
 
         explicit vector (const allocator_type& alloc =
@@ -36,62 +46,51 @@ namespace ft {
 
             if ( n < 0 )
                 throw std::length_error( "invalid size" );
-            _arr = _alloc.allocate( _cap );
-            for ( size_t i = 0; i < _sz; ++i ) {
-                _alloc.construct( (_arr + i), val );
+            allocator = alloc;
+            _capacity = _size = n;
+            buffer = allocator.allocate(_capacity);
+            for (size_t i = 0; i < count; ++i)
+                buffer[i] = value;
             }
         }
         template <class InputIterator>
         vector(InputIterator first, InputIterator last,
                const allocator_type& alloc = allocator_type(),
                typename ft::enable_if<!ft::is_integral<InputIterator>::value, void>::type* = 0) :
-                _arr( NULL ), _alloc(alloc), _sz(0), _cap(0) {
+               _alloc(alloc), _sz(0), _cap(0) {
 
-            ptrdiff_t len = last.operator->() - first.operator->();
-            if (len < 0)
-                throw std::length_error("vector");
-            _sz = static_cast<size_type> (len);
-            _cap = _sz;
-            _arr = _alloc.allocate(_cap);
-            for (size_type i = 0; i < _sz; ++i){
-                _alloc.construct(_arr + i, *first);
-                first++;
-            }
+            buffer = allocator.allocate(_capacity);
+            assign(first, last);
+
         }
 
         //copy
-        vector(const vector& x) {
-            if (this != &x) {
-                _cap = x._cap;
-                _sz = x._sz;
-                _alloc = x._alloc;
-                _arr = _alloc.allocate(_cap);
-                for (size_t i = 0; i < _sz; ++i) {
-                    _alloc.construct((_arr + i), *(x._arr + i));
-                }
-            }
+        vector(const vector& x) : buffer(0), _capacity(other._capacity), _size(other._size), allocator(other.get_allocator()){
+            buffer = allocator.allocate(x._capacity);
+            for (size_t i = 0; i < _size; i++)
+                buffer[i] = x.buffer[i];
         }
 
         //destroy
         ~vector() {
-            if (_arr)
-                clear();
+
+            clear();
             _alloc.deallocate(_arr, _cap);
         };
 
         //operator=
         vector&                 operator= (const vector& x) {
-            if (this != &x) {
-                clear();
-                _alloc.deallocate(_arr, _cap);
-                _cap = x._cap;
-                _sz = x._sz;
-                _alloc = x._alloc;
-                _arr = _alloc.allocate(_cap);
-                for (size_t i = 0; i < _sz; ++i) {
-                    _alloc.construct((_arr + i), *(x._arr + i));
-                }
+            if (this == &x)
+                return *this;
+            clear();
+            allocator.deallocate(buffer, _capacity);
+            _capacity = x._capacity;
+            _size = x._size;
+            buffer = allocator.allocate(_capacity);
+            for (size_t i = 0; i < _size; ++i) {
+                buffer[i] = other.buffer[i];
             }
+            return *this;
         }
 
         // iterators
@@ -362,14 +361,6 @@ namespace ft {
 
         //allocator
         allocator_type          get_allocator() const { return _alloc; }
-
-
-    private:
-
-        T*              _arr;
-        size_t          _sz;
-        size_t          _cap;
-        allocator_type  _alloc;
 
     };
 
