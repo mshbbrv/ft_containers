@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <deque>
-#if 0 //CREATE A REAL STL EXAMPLE
+#if 1 //CREATE A REAL STL EXAMPLE
 #include <map>
 #include <stack>
 #include <vector>
@@ -61,10 +61,9 @@ int main(int argc, char** argv) {
     ft::vector<Buffer> vector_buffer;
     ft::stack<Buffer, std::deque<Buffer> > stack_deq_buffer;
     ft::map<int, int> map_int;
+    /*
     for (int i = 0; i < COUNT; i++)
     {
-        if ( i % 1000 == 0 )
-            std::cout << i << "\n";
         vector_buffer.push_back(Buffer());
     }
     for (int i = 0; i < COUNT; i++)
@@ -87,9 +86,12 @@ int main(int argc, char** argv) {
     {
         //NORMAL ! :P
     }
-
+    std::cout << "DONE!\n";
+    */
     for (int i = 0; i < COUNT; ++i)
     {
+        if (i % 1000 == 0)
+            std::cout << i << "\n";
         map_int.insert(ft::make_pair(rand(), rand()));
     }
 
