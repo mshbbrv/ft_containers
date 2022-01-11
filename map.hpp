@@ -26,12 +26,14 @@ namespace ft {
         typedef Node<value_type> node_type;
         typedef Node<value_type>* node_pointer;
 
-        typedef ft::node_iterator<node_pointer, value_type>					iterator;
-        typedef ft::node_iterator<const node_pointer, value_type>					const_iterator;
-        typedef ft::reverse_iterator<iterator>								reverse_iterator;
-        typedef ft::reverse_iterator<const_iterator>							const_reverse_iterator;
+        typedef ft::map_iterator<node_pointer, value_type>
+                iterator;
+        typedef ft::map_iterator<const node_pointer, value_type>
+                const_iterator;
+        typedef ft::reverse_iterator<iterator>			reverse_iterator;
+        typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
-        typedef typename allocator_type::template rebind<node_pointer>::other
+        typedef typename allocator_type::template rebind<node_type>::other
                 node_allocator;
 
         class value_compare : public std::binary_function<value_type, value_type, bool> {
@@ -49,31 +51,27 @@ namespace ft {
         allocator_type          _alloc;
         key_compare             _comp;
         node_allocator          _alloc_node;
-        node_pointer            _nil;
         node_pointer            _root;
+        node_type               _sen;
         size_type               _size;
 
-        void _createNil() {
-            _nil = _alloc_node.allocate(1);
-            _nil->data = _alloc.allocate(0);
-            _nil->parent = NULL;
-            _nil->right = &_nil;
-            _nil->left = &_nil;
-            _nil->color = BLACK;
-        }
-
         void _createTree() {
-            _createNil();
-            _root = &_nil;
+            _sen.left = &_sen;
+            _sen.right = &_sen;
+            _sen.begin = &_sen;
+            _sen.parent = NULL;
+            _sen.color = BLACK;
+            _sen.nil = true;
+            _root = &_sen;
         }
 
         void _rotateLeft(node_pointer x) {
             node_pointer y = x->right;
 
             x->right = y->left;
-            if (y->left != _nil)
+            if (!y->left->nil)
                 y->left->parent = x;
-            if (y != _nil)
+            if (!y->nil)
                 y->parent = x->parent;
             if (x->parent) {
                 if (x == x->parent->left) {
@@ -86,7 +84,7 @@ namespace ft {
                 _root = y;
             }
             y->left = x;
-            if (x != _nil)
+            if (!x->nil)
                 x->parent = y;
         }
 
@@ -94,9 +92,9 @@ namespace ft {
             node_pointer y = x->left;
 
             x->left = y->right;
-            if ( y->right != _nil)
+            if (!y->right->nil)
                 y->right->parent = x;
-            if (y != _nil)
+            if (!y->nil)
                 y->parent = x->parent;
             if (x->parent) {
                 if (x == x->parent->right)
@@ -107,7 +105,7 @@ namespace ft {
                 _root = y;
             }
             y->right = x;
-            if (x != _nil)
+            if (!x->nil)
                 x->parent = y;
         }
 
@@ -123,11 +121,11 @@ namespace ft {
                     } else {
                         if (x == x->parent->right) {
                             x = x->parent;
-                            rotateLeft(x);
+                            _rotateLeft(x);
                         }
                         x->parent->color = BLACK;
                         x->parent->parent->color = RED;
-                        rotateRight(x->parent->parent);
+                        _rotateRight(x->parent->parent);
                     }
                 } else {
                     node_pointer y = x->parent->parent->left;
@@ -139,11 +137,11 @@ namespace ft {
                     } else {
                         if (x == x->parent->left) {
                             x = x->parent;
-                            rotateRight(x);
+                            _rotateRight(x);
                         }
                         x->parent->color = BLACK;
                         x->parent->parent->color = RED;
-                        rotateLeft(x->parent->parent);
+                        _rotateLeft(x->parent->parent);
                     }
                 }
             }
@@ -157,7 +155,7 @@ namespace ft {
                     if (w->color == RED) {
                         w->color = BLACK;
                         x->parent->color = RED;
-                        rotateLeft (x->parent);
+                        _rotateLeft (x->parent);
                         w = x->parent->right;
                     }
                     if (w->left->color == BLACK && w->right->color == RED) {
@@ -167,13 +165,13 @@ namespace ft {
                         if (w->right->color == BLACK) {
                             w->left->color = BLACK;
                             w->color = RED;
-                            rotateRight (w);
+                            _rotateRight (w);
                             w = x->parent->right;
                         }
                         w->color = x->parent->color;
                         x->parent->color = BLACK;
                         w->right->color = BLACK;
-                        rotateLeft (x->parent);
+                        _rotateLeft (x->parent);
                         x = _root;
                     }
                 } else {
@@ -181,7 +179,7 @@ namespace ft {
                     if (w->color == RED) {
                         w->color = BLACK;
                         x->parent->color = RED;
-                        rotateRight (x->parent);
+                        _rotateRight (x->parent);
                         w = x->parent->left;
                     }
                     if (w->right->color == BLACK && w->left->color == BLACK) {
@@ -191,13 +189,13 @@ namespace ft {
                         if (w->left->color == BLACK) {
                             w->right->color = BLACK;
                             w->color = RED;
-                            rotateLeft (w);
+                            _rotateLeft (w);
                             w = x->parent->left;
                         }
                         w->color = x->parent->color;
                         x->parent->color = BLACK;
                         w->left->color = BLACK;
-                        rotateRight (x->parent);
+                        _rotateRight (x->parent);
                         x = _root;
                     }
                 }
@@ -209,18 +207,18 @@ namespace ft {
             node_pointer x;
             node_pointer y;
 
-            if (!z || z == _nil)
+            if (!z || z->nil)
                 return 0;
 
-            if (z->left == _nil || z->right == _nil) {
+            if (z->left->nil || z->right->nil) {
                 y = z;
             } else {
                 y = z->right;
-                while (y->left != _nil)
+                while (!y->left->nil)
                     y = y->left;
             }
 
-            if (y->left != _nil)
+            if (!y->left->nil)
                 x = y->left;
             else
                 x = y->right;
@@ -234,15 +232,16 @@ namespace ft {
             else
                 _root = x;
             if (y != z) {
-                delete z->pair;
-                value_type *p = new value_type(*y->pair);
-                z->pair = p;
+                delete z->data;
+                value_type *p = new value_type(*y->data);
+                z->data = p;
             }
 
             if (y->color == BLACK)
-                deleteFixup (x);
+                _deleteFixup (x);
 
-            _nil->parent = _getLast();
+            _sen.parent = _getLast();
+            _sen.begin = _getBegin();
             _size--;
             delete y;
             return 1;
@@ -250,7 +249,7 @@ namespace ft {
 
         node_pointer _getBegin() {
             node_pointer tmp = _root;
-            while (tmp->left != _nil) {
+            while (!tmp->left->nil) {
                 tmp = tmp->left;
             }
             return tmp;
@@ -258,7 +257,7 @@ namespace ft {
 
         node_pointer _getLast() {
             node_pointer tmp = _root;
-            while (tmp->right != _nil) {
+            while (!tmp->right->nil) {
                 tmp = tmp->right;
             }
             return tmp;
@@ -266,55 +265,57 @@ namespace ft {
 
         node_pointer _getEnd() {
             node_pointer tmp = _root;
-            while (tmp->right != _nil) {
+            while (!tmp->right->nil) {
                 tmp = tmp->right;
             }
             return tmp->right;
         }
 
         void _copyTree(node_pointer t) {
-            if (t->left != _nil)
+            if (!t->left->nil)
                 fillTree(t->left);
-            if (t != _nil)
-                insert(*t->data);
-            if (t->right != _nil)
-                fillTree(t->right);
+            if (!t->nil) insert(*t->data);
+            if (!t->right->nil)
+                _copyTree(t->right);
         }
 
         void _clearTree(node_pointer tmp) {
-            if (tmp == _nil)
+            if (tmp->nil)
                 return;
-            if (tmp->left != _nil)
-                clearTree(tmp->left);
-            if (tmp->right != _nil)
-                clearTree(tmp->right);
+            if (!tmp->left->nil)
+                _clearTree(tmp->left);
+            if (!tmp->right->nil)
+                _clearTree(tmp->right);
             _alloc_node.destroy(tmp);
             _alloc_node.deallocate(tmp, sizeof(node_type));
         }
 
         ft::pair<iterator, bool> _insertNode(node_pointer hint,
                                              const value_type& value) {
-            node_type *current, *parent, *x;
+            node_pointer current;
+            node_pointer parent;
+            node_pointer x;
 
             current = hint;
             parent = 0;
-            while (!current->NIL) {
-                if (value.first == current->pair->first)
+            while (!current->nil) {
+                if (value.first == current->data->first)
                     return ft::make_pair(current, false);
                 parent = current;
-                current = _comp(value.first, current->pair->first) ?
+                current = _comp(value.first, current->data->first) ?
                           current->left : current->right;
             }
 
             x = _alloc_node.allocate(sizeof(node_type));
-            x->data = value;
+            value_type *p = new value_type(value);
+            x->data = p;
             x->parent = parent;
-            x->left = &_nil;
-            x->right = &_nil;
+            x->left = &_sen;
+            x->right = &_sen;
             x->color = RED;
 
             if (parent) {
-                if (_comp(value.first, parent->pair->first))
+                if (_comp(value.first, parent->data->first))
                     parent->left = x;
                 else
                     parent->right = x;
@@ -324,7 +325,8 @@ namespace ft {
 
             _insertFixup(x);
 
-            if (x == _getLast()) { _nil->parent = x; }
+            if (x == _getLast()) { _sen.parent = x; }
+            if (x == _getBegin()) { _sen.begin = x; }
             _size++;
             return ft::make_pair(x, true);
         }
@@ -449,8 +451,9 @@ namespace ft {
         void erase(iterator first, iterator last) {
             iterator tmp;
 
-            for (; first != last ;) {
-                tmp = first++;
+            while ( first != last ) {
+                tmp = first;
+                first++;
                 _deleteNode(tmp.base());
             }
         }
@@ -478,7 +481,7 @@ namespace ft {
         iterator find(const key_type &k) {
             node_pointer current = _root;
 
-            while (current != _nil) {
+            while (!current->nil) {
                 if (k == current->data->first)
                     return (current);
                 else
@@ -491,7 +494,7 @@ namespace ft {
         const_iterator find(const key_type &k) const {
             node_pointer current = _root;
 
-            while (current != _nil) {
+            while (!current->_nil) {
                 if (k == current->data->first)
                     return (current);
                 else
@@ -508,18 +511,18 @@ namespace ft {
         iterator lower_bound (const key_type& k) {
             node_pointer current = _root;
 
-            while (current != _nil) {
+            while (!current->nil) {
                 if (k == current->data->first)
                     return iterator(current);
                 else {
                     if (_comp(k, current->data->first)) {
-                        if (current->left != _nil)
+                        if (!current->left->nil)
                             current = current->left;
                         else
                             return iterator(current);
                     }
                     else {
-                        if (current->right != _nil)
+                        if (!current->right->nil)
                             current = current->right;
                         else
                             return ++iterator(current);
@@ -531,18 +534,18 @@ namespace ft {
         const_iterator lower_bound (const key_type& k) const {
             node_pointer current = _root;
 
-            while (current != _nil) {
+            while (!current->nil) {
                 if (k == current->data.first)
                     return const_iterator(current);
                 else {
                     if (_comp(k, current->data.first)) {
-                        if (current->left != _nil)
+                        if (!current->left->nil)
                             current = current->left;
                         else
                             return const_iterator(current);
                     }
                     else {
-                        if (current->right != _nil)
+                        if (!current->right->nil)
                             current = current->right;
                         else
                             return ++const_iterator(current);

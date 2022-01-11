@@ -232,96 +232,118 @@ namespace ft {
     pair<T1, T2>
     make_pair(T1 x, T2 y) { return pair<T1, T2>(x, y); }
 
-    template <class T, class Pair>
-    class node_iterator {
+    template <class T, class V>
+    class map_iterator {
     public:
-        typedef T                                            						iterator_type;
-        typedef Pair                                            					value_type;
-        typedef ptrdiff_t                                       					difference_type;
-        typedef Pair&                                           					reference;
-        typedef const Pair&                                     					const_reference;
-        typedef Pair*                                           					pointer;
-        typedef const Pair*                                     					const_pointer;
+        typedef T                   iterator_type;
+        typedef V                   value_type;
+        typedef ptrdiff_t           difference_type;
+        typedef value_type&         reference;
+        typedef const value_type&   const_reference;
+        typedef value_type*         pointer;
+        typedef const value_type*   const_pointer;
         typedef typename iterator_traits<iterator_type>::iterator_category  	iterator_category;
 
     private:
 
-        T node;
-        T _nil;
-
-        void _createNil() {
-            _nil.parent = NULL;
-            _nil.right = &_nil;
-            _nil.left = &_nil;
-            _nil.color = BLACK;
-        }
+        iterator_type _node;
 
         void next() {
-            if (node == _nil && node->begin != node)
-                node = node->begin;
-            else if (node->right != _nil) {
-                node = node->right;
-                while (node->left != _nil)
-                    node = node->left;
+            if (_node->nil && _node->begin != _node) {
+                _node = _node->begin;
+            }
+            else if (!_node->right->nil) {
+                _node = _node->right;
+                while (!_node->left->nil)
+                    _node = _node->left;
             }
             else {
-                T current = node;
-                T tmp = node;
-                node = node->parent;
-                if (!node) { node = current->right; return; }
-                while (node->left != tmp) {
-                    if (!node->parent) { node = current->right; break; }
-                    tmp = node;
-                    node = node->parent;
+
+                iterator_type current = _node;
+                iterator_type tmp = _node;
+                _node = _node->parent;
+                if (!_node) { 
+                    _node = current->right;
+                    return;
+                }
+                while (_node->left != tmp) {
+                    if (!_node->parent) {
+                        _node = current->right;
+                        break;
+                    }
+                    tmp = _node;
+                    _node = _node->parent;
                 }
             }
         }
 
         void prev() {
-            if (node == _nil)
-                node = node->parent;
-            else if (node->left != _nil) {
-                node = node->left;
-                while (node->right != _nil)
-                    node = node->right;
+            if (_node->nil)
+                _node = _node->parent;
+            else if (!_node->left->nil) {
+                _node = _node->left;
+                while (!_node->right->nil)
+                    _node = _node->right;
             } else {
-                T tmp = node;
-                node = node->parent;
-                while (node->right != tmp) {
-                    tmp = node;
-                    if (!node->parent) { node = tmp->left - 1; break; }
-                    node = node->parent;
+                iterator_type tmp = _node;
+                _node = _node->parent;
+                while (_node->right != tmp) {
+                    tmp = _node;
+                    if (!_node->parent) {
+                        _node = tmp->left - 1;
+                        break;
+                    }
+                    _node = _node->parent;
                 }
             }
         }
+        
     public:
 
-        node_iterator(T value = nullptr) : node(value) { _createNil(); };
-        ~node_iterator()										{};
-        template <class U, class Z> node_iterator(const node_iterator<U, Z>& other,
-                                                  typename ft::enable_if<std::is_convertible<U, T>::value>::type* = 0)
-                : node(other.base()), _nil(other._nil) {};
-        iterator_type	base() const 									{ return node; }
-        node_iterator	&operator=(const node_iterator &obj)
-        { node = obj.node; _nil = obj._nil; return *this; }
-        node_iterator	operator++(int)									{ node_iterator tmp(*this); next(); return tmp; }
-        node_iterator	&operator++() 									{ next(); return *this; }
-        node_iterator	operator--(int)									{ node_iterator tmp(*this); prev(); return tmp; }
-        node_iterator	&operator--() 									{ prev(); return *this; }
-        reference 	operator*() { return *(node->data); }
-        const_reference operator*() const { return *(node->data); }
-        pointer 	operator->() { return node->data; }
-        const_pointer 	operator->() const { return node->data; }
-        bool		operator==(node_iterator const &obj) const 					{ return node == obj.node; };
-        bool		operator!=(node_iterator const &obj) const 					{ return node != obj.node; };
-        bool 		operator>(node_iterator const &obj) const
-        { return node->data > obj.node->data; };
-        bool 		operator<(node_iterator const &obj) const
-        { return obj.node->data > node->data; };
-        bool 		operator<=(node_iterator const &obj) const
-        { return node->data <= obj.node->data; };
-        bool 		operator>=(node_iterator const &obj) const
-        { return node->data >= obj.node->data; };
+        map_iterator(iterator_type value = NULL) : _node(value) {}
+        ~map_iterator() {}
+        template <class U, class Z> map_iterator(const map_iterator<U, Z>& other,
+                typename ft::enable_if<std::is_convertible<U, T>::value>::type* = 0)
+                : _node(other.base()) {}
+        iterator_type	base() const { return _node; }
+        map_iterator	&operator=(const map_iterator &obj) {
+            _node = obj._node;
+            return *this;
+        }
+        map_iterator	operator++(int) {
+            map_iterator tmp( *this );
+            next();
+            return tmp;
+        }
+        map_iterator	&operator++() {
+            next();
+            return *this;
+        }
+        map_iterator	operator--(int) {
+            map_iterator tmp(*this);
+            prev();
+            return tmp;
+        }
+        map_iterator	&operator--() {
+            prev();
+            return *this;
+        }
+        reference 	operator*() {return *(_node->data); }
+        const_reference operator*() const { return *(_node->data); }
+        pointer 	operator->() { return _node->data; }
+        const_pointer 	operator->() const { return _node->data; }
+        bool		operator==(map_iterator const &obj) const
+        { return _node == obj._node; }
+        bool		operator!=(map_iterator const &obj) const
+        { return _node != obj._node; }
+        bool 		operator>(map_iterator const &obj) const
+        { return _node->data > obj._node->data; }
+        bool 		operator<(map_iterator const &obj) const
+        { return obj._node->data > _node->data; }
+        bool 		operator<=(map_iterator const &obj) const
+        { return _node->data <= obj._node->data; }
+        bool 		operator>=(map_iterator const &obj) const
+        { return _node->data >= obj._node->data; }
     };
 
 }

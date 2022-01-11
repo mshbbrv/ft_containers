@@ -44,6 +44,8 @@ int main() {
     std::cout << "\ngquiz2 after removal of"
             " elements less than key=3 : \n";
     std::cout << "\tKEY\tELEMENT\n";
+
+
     gquiz2.erase(gquiz2.begin(), gquiz2.find(3));
 
     for (itr = gquiz2.begin(); itr != gquiz2.end(); ++itr) {
