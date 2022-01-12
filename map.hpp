@@ -158,8 +158,8 @@ namespace ft {
                         _rotateLeft (x->parent);
                         w = x->parent->right;
                     }
-                    if (w->left->color == BLACK && w->right->color == RED) {
-                        w->color = BLACK;
+                    if (w->left->color == BLACK && w->right->color == BLACK) {
+                        w->color = RED;
                         x = x->parent;
                     } else {
                         if (w->right->color == BLACK) {
@@ -273,7 +273,7 @@ namespace ft {
 
         void _copyTree(node_pointer t) {
             if (!t->left->nil)
-                fillTree(t->left);
+                _copyTree(t->left);
             if (!t->nil) insert(*t->data);
             if (!t->right->nil)
                 _copyTree(t->right);
@@ -307,8 +307,7 @@ namespace ft {
             }
 
             x = _alloc_node.allocate(sizeof(node_type));
-            value_type *p = new value_type(value);
-            x->data = p;
+            _alloc_node.construct(x, value);
             x->parent = parent;
             x->left = &_sen;
             x->right = &_sen;
@@ -325,8 +324,10 @@ namespace ft {
 
             _insertFixup(x);
 
-            if (x == _getLast()) { _sen.parent = x; }
-            if (x == _getBegin()) { _sen.begin = x; }
+            if (x == _getLast())
+                _sen.parent = x;
+            if (x == _getBegin())
+                _sen.begin = x;
             _size++;
             return ft::make_pair(x, true);
         }
@@ -350,8 +351,8 @@ namespace ft {
         }
 
         //copy
-        map(const map &x) : _alloc(x._alloc), _comp(x._comp),
-        _root(NULL), _size(x._size) {
+        map(const map &x) : _alloc(x._alloc), _comp(x._comp), _size(x._size) {
+            _createTree();
             _copyTree(x._root);
         }
 
@@ -451,9 +452,8 @@ namespace ft {
         void erase(iterator first, iterator last) {
             iterator tmp;
 
-            while ( first != last ) {
-                tmp = first;
-                first++;
+            for (; first != last ;) {
+                tmp = first++;
                 _deleteNode(tmp.base());
             }
         }

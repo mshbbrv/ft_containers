@@ -249,7 +249,7 @@ namespace ft {
         iterator_type _node;
 
         void next() {
-            if (_node->nil && _node->begin != _node) {
+            if (_node->nil && _node->begin != _node ) {
                 _node = _node->begin;
             }
             else if (!_node->right->nil) {
@@ -258,7 +258,6 @@ namespace ft {
                     _node = _node->left;
             }
             else {
-
                 iterator_type current = _node;
                 iterator_type tmp = _node;
                 _node = _node->parent;
@@ -316,6 +315,7 @@ namespace ft {
             return tmp;
         }
         map_iterator	&operator++() {
+
             next();
             return *this;
         }
