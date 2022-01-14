@@ -1,4 +1,4 @@
-#if 1 //CREATE A REAL STL EXAMPLE
+#if 0 //CREATE A REAL STL EXAMPLE
 #include <map>
 namespace ft = std;
 #else

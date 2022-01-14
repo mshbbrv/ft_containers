@@ -58,9 +58,11 @@ namespace ft {
         size_type               _size;
 
         void _createTree() {
+
+            _sen.data = NULL;
+            _sen.begin = NULL;
             _sen.left = &_sen;
             _sen.right = &_sen;
-            _sen.begin = &_sen;
             _sen.parent = NULL;
             _sen.color = BLACK;
             _sen.nil = true;
@@ -282,18 +284,17 @@ namespace ft {
                 _copyTree(t->right);
         }
 
-        void _clearTree(node_pointer tmp) {
-            if (tmp->nil)
-                return;
-            if (!tmp->left->nil)
-                    _clearTree(tmp->left );
-            if (!tmp->right->nil)
-                _clearTree(tmp->right);
-            _alloc.destroy(tmp->data);
-            _alloc.deallocate(tmp->data, 1);
-            _alloc_node.destroy(tmp);
-            _alloc_node.deallocate(tmp, sizeof(node_type));
-            _size--;
+        void _clearTree(node_pointer n) {
+            if ( n->nil == false ) {
+                if ( n->left->nil == false )
+                    _clearTree( n->left );
+                if ( n->right->nil == false)
+                    _clearTree( n->right );
+                _alloc.destroy( n->data );
+                _alloc.deallocate( n->data, 1 );
+                _alloc_node.deallocate( n, 1 );
+                _size--;
+            }
         }
 
         ft::pair<iterator, bool> _insertNode(node_pointer hint,
@@ -312,12 +313,15 @@ namespace ft {
                           current->left : current->right;
             }
 
-            x = _alloc_node.allocate(sizeof(node_type));
-            _alloc_node.construct(x, value);
+            x = _alloc_node.allocate(1);
+            x->data = _alloc.allocate(1);
+            _alloc.construct(x->data, value);
+            x->begin = NULL;
             x->parent = parent;
             x->left = &_sen;
             x->right = &_sen;
             x->color = RED;
+            x->nil = false;
 
             if (parent) {
                 if (_comp(value.first, parent->data->first))
