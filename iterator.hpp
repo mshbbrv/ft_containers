@@ -242,7 +242,8 @@ namespace ft {
         typedef const value_type&   const_reference;
         typedef value_type*         pointer;
         typedef const value_type*   const_pointer;
-        typedef typename iterator_traits<iterator_type>::iterator_category  	iterator_category;
+        //typedef typename iterator_traits<iterator_type>::iterator_category
+        //iterator_category;
 
     private:
 

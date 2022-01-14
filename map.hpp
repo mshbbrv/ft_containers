@@ -263,7 +263,7 @@ namespace ft {
             return tmp;
         }
 
-        node_pointer _getEnd() {
+        node_pointer _getEnd() const {
             node_pointer tmp = _root;
             while (!tmp->right->nil) {
                 tmp = tmp->right;
@@ -288,6 +288,7 @@ namespace ft {
                 _clearTree(tmp->right);
             _alloc_node.destroy(tmp);
             _alloc_node.deallocate(tmp, sizeof(node_type));
+            _size = 0;
         }
 
         ft::pair<iterator, bool> _insertNode(node_pointer hint,
@@ -431,7 +432,7 @@ namespace ft {
                     }
                 }
             }
-            return insertNode(position.base(), val).first;
+            return _insertNode(position.base(), val).first;
         }
 
         template<class InputIterator>
@@ -494,7 +495,7 @@ namespace ft {
         const_iterator find(const key_type &k) const {
             node_pointer current = _root;
 
-            while (!current->_nil) {
+            while (!current->nil) {
                 if (k == current->data->first)
                     return (current);
                 else

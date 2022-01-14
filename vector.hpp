@@ -122,12 +122,12 @@ namespace ft {
         void resize (size_type n, value_type val = value_type()) {
 
             if (n < _sz) {
-                while (_sz != n)
+                for (; _sz != n; )
                     pop_back();
             } else {
                 if (_cap * 2 < n)
                     reserve(n);
-                while (_sz != n)
+                for (; _sz != n; )
                     push_back(val);
             }
 
@@ -174,9 +174,12 @@ namespace ft {
         void assign(InputIterator first, InputIterator last,
                     typename ft::enable_if<!ft::is_integral<InputIterator>::value, void>::type* = 0) {
 
-            int dis = last - first;
-            if (dis < 0)
-                throw std::length_error("out of range");
+            size_type dis = 0;
+
+            for (iterator it = first; it != last; it++, dis++) {
+                if (it == end())
+                    throw std::length_error("out of range");
+            }
             clear();
             reserve(dis);
             for (; first != last; ++first) {
@@ -209,7 +212,8 @@ namespace ft {
 
         iterator    insert (iterator position, const value_type& val) {
 
-            int i = position - begin();
+            size_type i(0);
+            for (iterator it = begin(); it != position; it++, i++);
             insert(position, 1, val);
             return iterator(_arr + i);
         }
@@ -222,20 +226,19 @@ namespace ft {
                 reserve(_cap + n);
                 _sz = max_size;
             } else {
-                while (_sz != max_size) {
+                for(; _sz != max_size; _sz++) {
                     if (_sz == _cap)
                         reserve(_cap * 2);
-                    _sz++;
                 }
             }
+            size_type i(0);
+            for (iterator it = begin(); it != position; it++, i++);
 
-            int i = position - begin();
-            for (size_type k = _sz; k >= 0; --k) {
+            for (size_type k = _sz - 1; k >= 0; --k) {
                 if (k == i) {
-                    for (; n > 0; --n) {
+                    for (; n > 0; --n, ++i)
                         _arr[i] = val;
-                        return;
-                    }
+                    return;
                 }
                 _arr[k] = _arr[k - n];
             }
@@ -245,7 +248,8 @@ namespace ft {
         void insert (iterator position, InputIterator first, InputIterator last,
                      typename ft::enable_if<!ft::is_integral<InputIterator>::value, void>::type* = 0) {
 
-            size_type dis = last - first;
+            size_type dis(0);
+            for (iterator it = first; it != last; it++, dis++);
 
             pointer tmp = _alloc.allocate(dis);
             bool res = true;
@@ -263,18 +267,19 @@ namespace ft {
                 reserve(_cap + dis);
                 _sz = newSize;
             } else {
-                while (_sz != newSize) {
+                for (;_sz != newSize; _sz++) {
                     if (_sz == _cap)
                         reserve(_cap * 2);
-                    _sz++;
                 }
             }
-            size_type index = (position - begin()) + dis - 1;
+
+            size_type dis2(0);
+            for (iterator it = begin();it != position; it++, dis2++);
+            size_type index = dis2 + dis - 1;
             for (size_type i = _sz - 1; i >= 0; --i) {
                 if (i == index) {
-                    for (; dis > 0; --dis, --i) {
+                    for (; dis > 0; --dis, --i)
                         _arr[i] = *--last;
-                    }
                     return;
                 }
                 _arr[i] = _arr[i - dis];
@@ -282,23 +287,27 @@ namespace ft {
         }
 
         iterator erase (iterator position) {
-            int index = position - begin();
-            for (size_type i = index; i < _sz; ++i) {
-                _arr[i] = _arr[i + 1];
-            }
+            size_type i(0);
+            for (iterator it = begin() ; it != position; it++, i++);
+            for (size_type k = i; k < _sz; ++k)
+                _arr[k] = _arr[k + 1];
             _sz--;
             return position;
         }
         iterator erase (iterator first, iterator last) {
 
-            size_type start = first - begin();
-            size_type end = last - begin();
+            size_type start(0);
+            for (iterator it = begin(); it != first; it++, start++);
+
+            size_type end(0);
+            for (iterator it = begin(); it != last; it++, end++);
+
             size_type offset = end - start;
 
             _sz -= offset;
-            for (size_type i = start; i < _sz; ++i) {
+            for (size_type i = start; i < _sz; ++i)
                 _arr[i] = _arr[i + offset];
-            }
+
             return _arr + start;
         }
 
@@ -309,9 +318,8 @@ namespace ft {
             std::swap(_alloc, x._alloc);
         }
         void clear() {
-            for (size_type i = 0; i < _sz; i++) {
+            for (size_type i = 0; i < _sz; i++)
                 _alloc.destroy(_arr + i);
-            }
             _sz = 0;
         }
 

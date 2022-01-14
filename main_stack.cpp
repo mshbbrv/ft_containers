@@ -1,9 +1,14 @@
+#if 1 //CREATE A REAL STL EXAMPLE
+#include <stack>
+namespace ft = std;
+#else
 #include "stack.hpp"
+#endif
 #include <iostream>
 
 int main(){
 
-    std::cout << "--------TEST 1---------";
+    std::cout << "--------ALL TESTS---------";
 
     {
         ft::stack<int> stack;

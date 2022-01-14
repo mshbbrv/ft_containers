@@ -1,10 +1,14 @@
-#include "vector.hpp"
-#include "iostream"
+#if 0 //CREATE A REAL STL EXAMPLE
 #include <vector>
+namespace ft = std;
+#else
+#include "vector.hpp"
+#endif
+#include "iostream"
 
 int main(){
 
-    std::cout << "--------TEST 0---------\n";
+    std::cout << "--------ITER TEST---------\n";
     {
         ft::vector<int>::iterator iter;
         ft::vector<int>::const_iterator const_iter;
@@ -14,9 +18,35 @@ int main(){
         //iter = const_iter;
     }
 
-    std::cout << "--------TEST 1---------\n";
-
+    std::cout << "--------CONSTR TEST---------\n";
     {
+        ft::vector<int> v;
+
+        ft::vector<int> v1(5, 3);
+        std::cout << "Output v1 of begin and end: ";
+        for ( ft::vector<int>::iterator i = v1.begin(); i != v1.end(); ++i )
+            std::cout << *i << " ";
+
+        ft::vector<int> v2(v1.begin(), v1.end());
+        std::cout << "\nOutput v2 of begin and end: ";
+        for ( ft::vector<int>::iterator i = v2.begin(); i != v2.end(); ++i )
+            std::cout << *i << " ";
+
+        ft::vector<int> v3(v2);
+        std::cout << "\nOutput v3 of begin and end: ";
+        for ( ft::vector<int>::iterator i = v3.begin(); i != v3.end(); ++i )
+            std::cout << *i << " ";
+
+        ft::vector<int> v4 = v3;
+        std::cout << "\nOutput v4 of begin and end: ";
+        for ( ft::vector<int>::iterator i = v4.begin(); i != v4.end(); ++i )
+            std::cout << *i << " ";
+
+    }
+
+    std::cout << "\n--------ITER TEST---------\n";
+    {
+
         ft::vector<int> g1;
 
         for ( int i = 1; i <= 5; i++ )
@@ -33,7 +63,8 @@ int main(){
             std::cout << *ir << " ";
 
     }
-    std::cout << "\n--------TEST 2---------";
+
+    std::cout << "\n--------CAPACITY TEST---------";
     {
         ft::vector<int> g1;
 
@@ -44,20 +75,16 @@ int main(){
         std::cout << "\nCapacity : " << g1.capacity();
         std::cout << "\nMax_Size : " << g1.max_size();
 
-        // resizes the vector size to 4
         g1.resize( 4 );
-
-        // prints the vector size after resize()
         std::cout << "\nSize : " << g1.size();
 
-        // checks if the vector is empty or not
         if ( g1.empty() == false )
             std::cout << "\nVector is not empty";
         else
             std::cout << "\nVector is empty";
     }
 
-    std::cout << "\n--------TEST 3---------";
+    std::cout << "\n--------ELEMENT ACCESS TEST---------";
     {
         ft::vector<int> g1;
 
@@ -73,70 +100,82 @@ int main(){
         std::cout << "\nback() : g1.back() = " << g1.back();
 
     }
-    std::cout << "\n--------TEST 4---------";
+    std::cout << "\n--------MODIFIERS TEST---------";
     {
-        // Assign vector
         ft::vector<int> v;
-
-        // fill the array with 10 five times
         v.assign(5, 10);
 
         std::cout << "\nThe vector elements are: ";
         for (int i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
-        // inserts 15 to the last position
+        ft::vector<int> v2;
+        v2.assign(v.begin(), v.end());
+
+        std::cout << "\nThe v2 elements are: ";
+        for (int i = 0; i < v.size(); i++)
+            std::cout << v[i] << " ";
+
         v.push_back(15);
         int n = v.size();
         std::cout << "\nThe last element is: " << v[n - 1];
 
-        // removes last element
         v.pop_back();
 
-        // prints the vector
         std::cout << "\nThe vector elements are: ";
         for (int i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
-        // inserts 5 at the beginning
         v.insert(v.begin(), 5);
-
         std::cout << "\nThe first element is: " << v[0];
 
-        // removes the first element
         v.erase(v.begin());
 
         std::cout << "\nThe first element is: " << v[0];
 
-        // erases the vector
+        v.insert(v.begin(), 2, 13);
+        std::cout << "\nThe vector elements are: ";
+        for (int i = 0; i < v.size(); i++)
+            std::cout << v[i] << " ";
+
+        v.erase(v.begin(), v.begin() + 2);
+        std::cout << "\nThe vector elements are: ";
+        for (int i = 0; i < v.size(); i++)
+            std::cout << v[i] << " ";
+
+        ft::vector<int> v3(3, 13);
+        v.insert(v.begin() + 2, v3.begin(), v3.end());
+        std::cout << "\nThe vector elements are: ";
+        for (int i = 0; i < v.size(); i++)
+            std::cout << v[i] << " ";
+
         v.clear();
         std::cout << "\nVector size after erase(): " << v.size();
 
-        // two vector to perform swap
-        ft::vector<int> v1, v2;
-        v1.push_back(1);
-        v1.push_back(2);
-        v2.push_back(3);
-        v2.push_back(4);
+        ft::vector<int> v4, v5;
+        v4.push_back(1);
+        v4.push_back(2);
+        v5.push_back(3);
+        v5.push_back(4);
 
-        std::cout << "\nVector 1: ";
-        for (int i = 0; i < v1.size(); i++)
-            std::cout << v1[i] << " ";
+        std::cout << "\nVector 4: ";
+        for (int i = 0; i < v4.size(); i++)
+            std::cout << v4[i] << " ";
 
-        std::cout << "\nVector 2: ";
-        for (int i = 0; i < v2.size(); i++)
-            std::cout << v2[i] << " ";
+        std::cout << "\nVector 5: ";
+        for (int i = 0; i < v5.size(); i++)
+            std::cout << v5[i] << " ";
 
         // Swaps v1 and v2
-        v1.swap(v2);
+        v4.swap(v5);
 
-        std::cout << "\nAfter Swap \nVector 1: ";
-        for (int i = 0; i < v1.size(); i++)
-            std::cout << v1[i] << " ";
+        std::cout << "\nAfter Swap \nVector 4: ";
+        for (int i = 0; i < v4.size(); i++)
+            std::cout << v4[i] << " ";
 
-        std::cout << "\nVector 2: ";
-        for (int i = 0; i < v2.size(); i++)
-            std::cout << v2[i] << " ";
+        std::cout << "\nVector 5: ";
+        for (int i = 0; i < v5.size(); i++)
+            std::cout << v5[i] << " ";
 
         std::cout << '\n';
     }
