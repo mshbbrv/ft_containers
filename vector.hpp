@@ -57,7 +57,7 @@ namespace ft {
         vector(InputIterator first, InputIterator last,
                const allocator_type& alloc = allocator_type(),
                typename ft::enable_if<!ft::is_integral<InputIterator>::value, void>::type* = 0) :
-                _alloc(alloc), _sz(0), _cap(0) {
+               _sz(0), _cap(0), _alloc(alloc) {
             _arr = _alloc.allocate(_cap);
             assign(first, last);
         }
@@ -114,10 +114,7 @@ namespace ft {
 
         // capacity
         size_type size() const { return _sz; }
-        size_type max_size() const {
-            return (std::min((size_type) std::numeric_limits<difference_type>::max(),
-                             std::numeric_limits<size_type>::max() / sizeof(value_type)));
-        }
+        size_type max_size() const { return _alloc.max_size(); }
 
         void resize (size_type n, value_type val = value_type()) {
 
@@ -231,16 +228,18 @@ namespace ft {
                         reserve(_cap * 2);
                 }
             }
-            size_type i(0);
+            int i(0);
             for (iterator it = begin(); it != position; it++, i++);
 
-            for (size_type k = _sz - 1; k >= 0; --k) {
+            for (int k = _sz - 1; k >= 0; --k) {
                 if (k == i) {
                     for (; n > 0; --n, ++i)
                         _arr[i] = val;
                     return;
                 }
-                _arr[k] = _arr[k - n];
+                if (k - static_cast<int>(n) >= 0) {
+                    _arr[k] = _arr[k - n];
+                }
             }
         }
 

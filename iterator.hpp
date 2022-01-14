@@ -237,13 +237,10 @@ namespace ft {
     public:
         typedef T                   iterator_type;
         typedef V                   value_type;
-        typedef ptrdiff_t           difference_type;
         typedef value_type&         reference;
         typedef const value_type&   const_reference;
         typedef value_type*         pointer;
         typedef const value_type*   const_pointer;
-        //typedef typename iterator_traits<iterator_type>::iterator_category
-        //iterator_category;
 
     private:
 
@@ -302,8 +299,7 @@ namespace ft {
 
         map_iterator(iterator_type value = NULL) : _node(value) {}
         ~map_iterator() {}
-        template <class U, class Z> map_iterator(const map_iterator<U, Z>& other,
-                typename ft::enable_if<std::is_convertible<U, T>::value>::type* = 0)
+        template <class U, class Z> map_iterator(const map_iterator<U, Z>& other)
                 : _node(other.base()) {}
         iterator_type	base() const { return _node; }
         map_iterator	&operator=(const map_iterator &obj) {
@@ -346,5 +342,117 @@ namespace ft {
         bool 		operator>=(map_iterator const &obj) const
         { return _node->data >= obj._node->data; }
     };
+
+    template <class T, class V>
+    class reverse_map_iterator {
+    public:
+        typedef T                   iterator_type;
+        typedef V                   value_type;
+        typedef value_type&         reference;
+        typedef const value_type&   const_reference;
+        typedef value_type*         pointer;
+        typedef const value_type*   const_pointer;
+
+    private:
+
+        iterator_type _node;
+
+        void next() {
+            if (_node->nil && _node->begin != _node ) {
+                _node = _node->begin;
+            }
+            else if (!_node->right->nil) {
+                _node = _node->right;
+                while (!_node->left->nil)
+                    _node = _node->left;
+            }
+            else {
+                iterator_type current = _node;
+                iterator_type tmp = _node;
+                _node = _node->parent;
+                if (!_node) {
+                    _node = current->right;
+                    return;
+                }
+                while (_node->left != tmp) {
+                    if (!_node->parent) {
+                        _node = current->right;
+                        break;
+                    }
+                    tmp = _node;
+                    _node = _node->parent;
+                }
+            }
+        }
+
+        void prev() {
+            if (_node->nil)
+                _node = _node->parent;
+            else if (!_node->left->nil) {
+                _node = _node->left;
+                while (!_node->right->nil)
+                    _node = _node->right;
+            } else {
+                iterator_type tmp = _node;
+                _node = _node->parent;
+                while (_node->right != tmp) {
+                    tmp = _node;
+                    if (!_node->parent) {
+                        _node = tmp->left - 1;
+                        break;
+                    }
+                    _node = _node->parent;
+                }
+            }
+        }
+
+    public:
+
+        reverse_map_iterator(iterator_type value = NULL) : _node(value) {}
+        ~reverse_map_iterator() {}
+        template <class U, class Z> reverse_map_iterator(const reverse_map_iterator<U, Z>& other)
+                : _node(other.base()) {}
+        iterator_type	base() const { return _node; }
+        reverse_map_iterator	&operator=(const reverse_map_iterator &obj) {
+            _node = obj._node;
+            return *this;
+        }
+        reverse_map_iterator	operator++(int) {
+            reverse_map_iterator tmp( *this );
+            prev();
+            return tmp;
+        }
+        reverse_map_iterator	&operator++() {
+
+            prev();
+            return *this;
+        }
+        reverse_map_iterator	operator--(int) {
+            reverse_map_iterator tmp(*this);
+            next();
+            return tmp;
+        }
+        reverse_map_iterator	&operator--() {
+            next();
+            return *this;
+        }
+        reference 	operator*() {return *(_node->data); }
+        const_reference operator*() const { return *(_node->data); }
+        pointer 	operator->() { return _node->data; }
+        const_pointer 	operator->() const { return _node->data; }
+        bool		operator==(reverse_map_iterator const &obj) const
+        { return _node == obj._node; }
+        bool		operator!=(reverse_map_iterator const &obj) const
+        { return _node != obj._node; }
+        bool 		operator>(reverse_map_iterator const &obj) const
+        { return _node->data > obj._node->data; }
+        bool 		operator<(reverse_map_iterator const &obj) const
+        { return obj._node->data > _node->data; }
+        bool 		operator<=(reverse_map_iterator const &obj) const
+        { return _node->data <= obj._node->data; }
+        bool 		operator>=(reverse_map_iterator const &obj) const
+        { return _node->data >= obj._node->data; }
+    };
+
 
 }

@@ -106,14 +106,14 @@ int main(){
         v.assign(5, 10);
 
         std::cout << "\nThe vector elements are: ";
-        for (int i = 0; i < v.size(); i++)
+        for (size_t i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
         ft::vector<int> v2;
         v2.assign(v.begin(), v.end());
 
         std::cout << "\nThe v2 elements are: ";
-        for (int i = 0; i < v.size(); i++)
+        for (size_t i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
         v.push_back(15);
@@ -123,7 +123,7 @@ int main(){
         v.pop_back();
 
         std::cout << "\nThe vector elements are: ";
-        for (int i = 0; i < v.size(); i++)
+        for (size_t i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
         v.insert(v.begin(), 5);
@@ -135,18 +135,18 @@ int main(){
 
         v.insert(v.begin(), 2, 13);
         std::cout << "\nThe vector elements are: ";
-        for (int i = 0; i < v.size(); i++)
+        for (size_t i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
         v.erase(v.begin(), v.begin() + 2);
         std::cout << "\nThe vector elements are: ";
-        for (int i = 0; i < v.size(); i++)
+        for (size_t i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
         ft::vector<int> v3(3, 13);
         v.insert(v.begin() + 2, v3.begin(), v3.end());
         std::cout << "\nThe vector elements are: ";
-        for (int i = 0; i < v.size(); i++)
+        for (size_t i = 0; i < v.size(); i++)
             std::cout << v[i] << " ";
 
         v.clear();
@@ -159,22 +159,22 @@ int main(){
         v5.push_back(4);
 
         std::cout << "\nVector 4: ";
-        for (int i = 0; i < v4.size(); i++)
+        for (size_t i = 0; i < v4.size(); i++)
             std::cout << v4[i] << " ";
 
         std::cout << "\nVector 5: ";
-        for (int i = 0; i < v5.size(); i++)
+        for (size_t i = 0; i < v5.size(); i++)
             std::cout << v5[i] << " ";
 
         // Swaps v1 and v2
         v4.swap(v5);
 
         std::cout << "\nAfter Swap \nVector 4: ";
-        for (int i = 0; i < v4.size(); i++)
+        for (size_t i = 0; i < v4.size(); i++)
             std::cout << v4[i] << " ";
 
         std::cout << "\nVector 5: ";
-        for (int i = 0; i < v5.size(); i++)
+        for (size_t i = 0; i < v5.size(); i++)
             std::cout << v5[i] << " ";
 
         std::cout << '\n';

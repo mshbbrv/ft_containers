@@ -30,8 +30,10 @@ namespace ft {
                 iterator;
         typedef ft::map_iterator<const node_pointer, value_type>
                 const_iterator;
-        typedef ft::reverse_iterator<iterator>			reverse_iterator;
-        typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+        typedef ft::reverse_map_iterator<node_pointer, value_type>
+                reverse_iterator;
+        typedef ft::reverse_map_iterator<const node_pointer, value_type>
+                const_reverse_iterator;
 
         typedef typename allocator_type::template rebind<node_type>::other
                 node_allocator;
@@ -274,7 +276,8 @@ namespace ft {
         void _copyTree(node_pointer t) {
             if (!t->left->nil)
                 _copyTree(t->left);
-            if (!t->nil) insert(*t->data);
+            if (!t->nil)
+                insert(*t->data);
             if (!t->right->nil)
                 _copyTree(t->right);
         }
@@ -283,12 +286,14 @@ namespace ft {
             if (tmp->nil)
                 return;
             if (!tmp->left->nil)
-                _clearTree(tmp->left);
+                    _clearTree(tmp->left );
             if (!tmp->right->nil)
                 _clearTree(tmp->right);
+            _alloc.destroy(tmp->data);
+            _alloc.deallocate(tmp->data, 1);
             _alloc_node.destroy(tmp);
             _alloc_node.deallocate(tmp, sizeof(node_type));
-            _size = 0;
+            _size--;
         }
 
         ft::pair<iterator, bool> _insertNode(node_pointer hint,
@@ -358,7 +363,7 @@ namespace ft {
         }
 
         //destroy
-        virtual ~map() {
+        ~map() {
             _clearTree(_root);
         }
 
@@ -394,9 +399,10 @@ namespace ft {
         bool empty() const { return _size == 0; };
         size_type size() const { return _size; };
         size_type max_size() const {
-            return (std::min((size_type) std::numeric_limits<std::ptrdiff_t>::max(),
+            return (std::min((size_type)std::numeric_limits<std::ptrdiff_t>::max(),
                              std::numeric_limits<size_type>::max() /
                              (sizeof(node_type) + sizeof(mapped_type*))));
+
         }
 
         // element access
@@ -611,3 +617,4 @@ namespace ft {
         return !(lhs < rhs);
     }
 }
+
