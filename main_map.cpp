@@ -1,4 +1,4 @@
-#if 0 //CREATE A REAL STL EXAMPLE
+#if 0//CREATE A REAL STL EXAMPLE
 #include <map>
 namespace ft = std;
 #else
@@ -57,30 +57,6 @@ int main() {
         std::cout << "\nThe map m4 is : \n";
         std::cout << "\tKEY\tELEMENT\n";
         for (itr = m4.begin(); itr != m4.end(); ++itr) {
-            std::cout << '\t' << itr->first
-                      << '\t' << itr->second << '\n';
-        }
-        std::cout << std::endl;
-
-    }
-
-    std::cout << "--------ITER TEST---------\n";
-    {
-        ft::map<int, int> m;
-
-        m.insert(ft::pair<int, int>(1, 40));
-        m.insert(ft::pair<int, int>(2, 30));
-        m.insert(ft::pair<int, int>(3, 60));
-        m.insert(ft::pair<int, int>(4, 20));
-        m.insert(ft::pair<int, int>(5, 50));
-        m.insert(ft::pair<int, int>(6, 50));
-        m.insert(ft::pair<int, int>(7, 10));
-
-        ft::map<int, int>::iterator itr;
-
-        std::cout << "\nThe map m is : \n";
-        std::cout << "\tKEY\tELEMENT\n";
-        for (itr = m.begin(); itr != m.end(); ++itr) {
             std::cout << '\t' << itr->first
                       << '\t' << itr->second << '\n';
         }
