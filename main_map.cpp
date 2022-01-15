@@ -267,7 +267,6 @@ int main() {
         std::cout << "upper bound points to: ";
         std::cout << ret.second->first << " => " << ret.second->second << '\n';
 
-        return 0;
     }
     return 0;
 }

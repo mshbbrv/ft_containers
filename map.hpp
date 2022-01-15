@@ -236,8 +236,11 @@ namespace ft {
             else
                 _root = x;
             if (y != z) {
-                delete z->data;
-                value_type *p = new value_type(*y->data);
+
+                _alloc.destroy( z->data );
+                _alloc.deallocate( z->data, 1 );
+                value_type *p = _alloc.allocate(1);
+                _alloc.construct(p, *y->data);
                 z->data = p;
             }
 
@@ -246,8 +249,10 @@ namespace ft {
 
             _sen.parent = _getLast();
             _sen.begin = _getBegin();
+            _alloc.destroy( y->data );
+            _alloc.deallocate( y->data, 1 );
+            _alloc_node.deallocate( y, 1 );
             _size--;
-            delete y;
             return 1;
         }
 
@@ -285,6 +290,7 @@ namespace ft {
         }
 
         void _clearTree(node_pointer n) {
+
             if ( n->nil == false ) {
                 if ( n->left->nil == false )
                     _clearTree( n->left );
@@ -421,9 +427,9 @@ namespace ft {
         }
 
         iterator insert(iterator position, const value_type &val) {
-            if (position == end()) {
+            if (position == end())
                 return _insertNode(_root, val).first;
-            }
+
             else {
                 if (position->first > val.first)
                 {
